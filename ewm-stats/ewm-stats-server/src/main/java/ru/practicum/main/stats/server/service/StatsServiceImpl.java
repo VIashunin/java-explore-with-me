@@ -63,7 +63,9 @@ public class StatsServiceImpl implements StatsService {
         if (responseStatsList.isEmpty()) {
             throw new StatsNotFoundException("Statistic was not found.");
         } else {
-            return responseStatsList.stream().sorted(Comparator.comparing(ResponseDto::getHits).reversed()).collect(Collectors.toList());
+            return responseStatsList.stream()
+                    .sorted(Comparator.comparing(ResponseDto::getHits).reversed())
+                    .collect(Collectors.toList());
         }
     }
 }
