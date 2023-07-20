@@ -7,7 +7,7 @@ services:
       - "6541:5432"
     environment:
       - POSTGRES_DB=stats
-      - POSTGRES_USER=stats
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=stats
 
   stats-server:
@@ -19,20 +19,18 @@ services:
     depends_on:
       - stats-db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
-      - POSTGRES_USER=stats
-      - POSTGRES_PASSWORD=stats
+      - STATS_SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
+      - STATS_POSTGRES_USER=postgres
+      - STATS_POSTGRES_PASSWORD=stats
 
   ewm-db:
     image: postgres:14-alpine
     container_name: db_ewm_container
     ports:
-      - "6545:5434"
-    depends_on:
-      - stats-server
+      - "6543:5432"
     environment:
       - POSTGRES_DB=main
-      - POSTGRES_USER=main
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=main
 
   ewm-service:
@@ -44,6 +42,6 @@ services:
     depends_on:
       - ewm-db
     environment:
-      - MAIN_SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5434/main
-      - MAIN_POSTGRES_USER=main
+      - MAIN_SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/main
+      - MAIN_POSTGRES_USER=postgres
       - MAIN_POSTGRES_PASSWORD=main

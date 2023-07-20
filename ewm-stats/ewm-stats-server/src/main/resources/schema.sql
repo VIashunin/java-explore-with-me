@@ -8,3 +8,4 @@ CREATE TABLE IF NOT EXISTS stats
     ip VARCHAR(40)                             NOT NULL,
     timestamp TIMESTAMP WITHOUT TIME ZONE      NOT NULL
 );
+
