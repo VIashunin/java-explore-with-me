@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 @RestControllerAdvice
 public class ErrorHandler {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private final String CONFLICT_EXCEPTION_REASON_MESSAGE = "Data integrity has been violated.";
+    private final String conflictExceptionReasonMessage = "Data integrity has been violated.";
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -43,7 +43,7 @@ public class ErrorHandler {
     public ApiError handleConflictException(ConflictException e) {
         return ApiError.builder()
                 .message(e.getMessage())
-                .reason(CONFLICT_EXCEPTION_REASON_MESSAGE)
+                .reason(conflictExceptionReasonMessage)
                 .status(HttpStatus.CONFLICT.toString())
                 .timestamp(LocalDateTime.parse(LocalDateTime.now().format(formatter), formatter))
                 .build();
@@ -54,7 +54,7 @@ public class ErrorHandler {
     public ApiError handleConflictException(SQLException e) {
         return ApiError.builder()
                 .message(e.getMessage())
-                .reason(CONFLICT_EXCEPTION_REASON_MESSAGE)
+                .reason(conflictExceptionReasonMessage)
                 .status(HttpStatus.CONFLICT.toString())
                 .timestamp(LocalDateTime.parse(LocalDateTime.now().format(formatter), formatter))
                 .build();
@@ -65,7 +65,7 @@ public class ErrorHandler {
     public ApiError handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         return ApiError.builder()
                 .message(e.getMessage())
-                .reason(CONFLICT_EXCEPTION_REASON_MESSAGE)
+                .reason(conflictExceptionReasonMessage)
                 .status(HttpStatus.BAD_REQUEST.toString())
                 .timestamp(LocalDateTime.parse(LocalDateTime.now().format(formatter), formatter))
                 .build();
