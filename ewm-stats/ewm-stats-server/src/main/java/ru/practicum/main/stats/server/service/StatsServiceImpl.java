@@ -1,7 +1,6 @@
 package ru.practicum.main.stats.server.service;
 
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main.stats.dto.RequestDto;
@@ -20,11 +19,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Transactional
 public class StatsServiceImpl implements StatsService {
-    @Autowired
-    private StatsRepository repository;
+    private final StatsRepository repository;
 
     @Override
     public ResponseDto hit(RequestDto requestDto) {
@@ -46,10 +44,16 @@ public class StatsServiceImpl implements StatsService {
         if (uris != null && !uris.isEmpty()) {
             if (unique) {
                 for (String uri : uris) {
+                    if (uri.contains("[")) {
+                        uri = uri.substring(uri.indexOf('/'), uri.indexOf(']'));
+                    }
                     responseStatsList.addAll(repository.findStatsUriUnique(startTime, endTime, uri));
                 }
             } else {
                 for (String uri : uris) {
+                    if (uri.contains("[")) {
+                        uri = uri.substring(uri.indexOf('/'), uri.indexOf(']'));
+                    }
                     responseStatsList.addAll(repository.findStatsUri(startTime, endTime, uri));
                 }
             }
