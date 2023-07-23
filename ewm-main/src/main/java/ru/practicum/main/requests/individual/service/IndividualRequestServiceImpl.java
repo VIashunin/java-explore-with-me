@@ -51,7 +51,7 @@ public class IndividualRequestServiceImpl implements IndividualRequestService {
             }
         }
         boolean secondCondition = event.getInitiator().getId() == user.getId();
-        boolean thirdCondition = event.getState().equals(EventStatus.PENDING) || event.getState().equals(EventStatus.CANCELED);
+        boolean thirdCondition = event.getState() == EventStatus.PENDING || event.getState() == EventStatus.CANCELED;
         boolean fourthCondition = (event.getConfirmedRequests() >= event.getParticipantLimit()) && event.getParticipantLimit() != 0;
         boolean fifthCondition = !event.isRequestModeration();
         boolean sixthCondition = event.getParticipantLimit() == 0;
@@ -98,7 +98,7 @@ public class IndividualRequestServiceImpl implements IndividualRequestService {
         for (ParticipationRequest request : requestList) {
             boolean firstCondition = (request.getEventsWithRequests().getParticipantLimit() == 0) || !request.getEventsWithRequests().isRequestModeration();
             boolean secondCondition = request.getEventsWithRequests().getConfirmedRequests() >= request.getEventsWithRequests().getParticipantLimit();
-            boolean thirdCondition = request.getStatus().equals(StatusEventRequestUpdateResult.PENDING);
+            boolean thirdCondition = request.getStatus() == StatusEventRequestUpdateResult.PENDING;
             if (firstCondition) {
                 request.setStatus(StatusEventRequestUpdateResult.CONFIRMED);
                 request.getEventsWithRequests().setConfirmedRequests(request.getEventsWithRequests().getConfirmedRequests() + 1);
@@ -110,7 +110,7 @@ public class IndividualRequestServiceImpl implements IndividualRequestService {
                     requestRepository.save(request);
                 } else {
                     request.setStatus(eventRequestStatusUpdateRequest.getStatus());
-                    if (request.getStatus().equals(StatusEventRequestUpdateResult.CONFIRMED)) {
+                    if (request.getStatus() == StatusEventRequestUpdateResult.CONFIRMED) {
                         request.getEventsWithRequests().setConfirmedRequests(request.getEventsWithRequests().getConfirmedRequests() + 1);
                     }
                     requestRepository.save(request);

@@ -78,16 +78,61 @@ public class AdminEventServiceImpl implements AdminEventService {
     public EventFullDto changeEvent(int eventId, UpdateEventAdminRequest updateEventAdminRequest) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event is not found or unavailable."));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        event = changeEventFields(event, updateEventAdminRequest, formatter);
+        return mapFromEventToEventFullDto(eventRepository.save(event));
+    }
+
+    private Event changeAnnotationField(Event event, UpdateEventAdminRequest updateEventAdminRequest) {
         if (updateEventAdminRequest.getAnnotation() != null) {
             event.setAnnotation(updateEventAdminRequest.getAnnotation());
         }
+        return event;
+    }
+
+    private Event changeDescriptionField(Event event, UpdateEventAdminRequest updateEventAdminRequest) {
+        if (updateEventAdminRequest.getDescription() != null) {
+            event.setDescription(updateEventAdminRequest.getDescription());
+        }
+        return event;
+    }
+
+    private Event changePaidField(Event event, UpdateEventAdminRequest updateEventAdminRequest) {
+        if (updateEventAdminRequest.getPaid() != null) {
+            event.setPaid(updateEventAdminRequest.getPaid());
+        }
+        return event;
+    }
+
+    private Event changeParticipantLimitField(Event event, UpdateEventAdminRequest updateEventAdminRequest) {
+        if (updateEventAdminRequest.getParticipantLimit() != null) {
+            event.setParticipantLimit(updateEventAdminRequest.getParticipantLimit());
+        }
+        return event;
+    }
+
+    private Event changeRequestModerationField(Event event, UpdateEventAdminRequest updateEventAdminRequest) {
+        if (updateEventAdminRequest.getRequestModeration() != null) {
+            event.setRequestModeration(updateEventAdminRequest.getRequestModeration());
+        }
+        return event;
+    }
+
+    private Event changeTitleField(Event event, UpdateEventAdminRequest updateEventAdminRequest) {
+        if (updateEventAdminRequest.getTitle() != null) {
+            event.setTitle(updateEventAdminRequest.getTitle());
+        }
+        return event;
+    }
+
+    private Event changeCategoryField(Event event, UpdateEventAdminRequest updateEventAdminRequest) {
         if (updateEventAdminRequest.getCategory() != null) {
             Category category = adminCategoryService.findCategoryById(updateEventAdminRequest.getCategory());
             event.setCategory(category);
         }
-        if (updateEventAdminRequest.getDescription() != null) {
-            event.setDescription(updateEventAdminRequest.getDescription());
-        }
+        return event;
+    }
+
+    private Event changeEventDateField(Event event, UpdateEventAdminRequest updateEventAdminRequest, DateTimeFormatter formatter) {
         if (updateEventAdminRequest.getEventDate() != null) {
             LocalDateTime startOldDate = event.getCreatedOn();
             LocalDateTime startNewDate = LocalDateTime.parse(updateEventAdminRequest.getEventDate(), formatter);
@@ -96,20 +141,19 @@ public class AdminEventServiceImpl implements AdminEventService {
             }
             event.setEventDate(LocalDateTime.parse(updateEventAdminRequest.getEventDate(), formatter));
         }
+        return event;
+    }
+
+    private Event changeLocationField(Event event, UpdateEventAdminRequest updateEventAdminRequest) {
         if (updateEventAdminRequest.getLocation() != null) {
             Location location = locationService.save(updateEventAdminRequest.getLocation());
             event.setLocation(location);
         }
-        if (updateEventAdminRequest.getPaid() != null) {
-            event.setPaid(updateEventAdminRequest.getPaid());
-        }
-        if (updateEventAdminRequest.getParticipantLimit() != null) {
-            event.setParticipantLimit(updateEventAdminRequest.getParticipantLimit());
-        }
-        if (updateEventAdminRequest.getRequestModeration() != null) {
-            event.setRequestModeration(updateEventAdminRequest.getRequestModeration());
-        }
-        if (event.getState().equals(EventStatus.PENDING)) {
+        return event;
+    }
+
+    private Event changeStateField(Event event, UpdateEventAdminRequest updateEventAdminRequest) {
+        if (event.getState() == EventStatus.PENDING) {
             if (updateEventAdminRequest.getStateAction() != null) {
                 switch (updateEventAdminRequest.getStateAction()) {
                     case PUBLISH_EVENT:
@@ -123,9 +167,20 @@ public class AdminEventServiceImpl implements AdminEventService {
         } else {
             throw new ConflictException("Data integrity violation has occurred.");
         }
-        if (updateEventAdminRequest.getTitle() != null) {
-            event.setTitle(updateEventAdminRequest.getTitle());
-        }
-        return mapFromEventToEventFullDto(eventRepository.save(event));
+        return event;
+    }
+
+    private Event changeEventFields(Event event, UpdateEventAdminRequest updateEventAdminRequest, DateTimeFormatter formatter) {
+        event = changeAnnotationField(event, updateEventAdminRequest);
+        event = changeCategoryField(event, updateEventAdminRequest);
+        event = changeDescriptionField(event, updateEventAdminRequest);
+        event = changeEventDateField(event, updateEventAdminRequest, formatter);
+        event = changeLocationField(event, updateEventAdminRequest);
+        event = changePaidField(event, updateEventAdminRequest);
+        event = changeParticipantLimitField(event, updateEventAdminRequest);
+        event = changeRequestModerationField(event, updateEventAdminRequest);
+        event = changeStateField(event, updateEventAdminRequest);
+        event = changeTitleField(event, updateEventAdminRequest);
+        return event;
     }
 }

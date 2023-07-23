@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ru.practicum.main.categories.mapper.CategoryMapper.mapFromCategoryToCategoryDto;
 import static ru.practicum.main.users.mapper.UserMapper.mapFromUserToUserShortDto;
@@ -102,10 +103,6 @@ public class EventMapper {
     }
 
     public static List<EventShortDto> mapFromEventListToEventShortDtoList(List<Event> eventList) {
-        List<EventShortDto> eventShortDtoList = new ArrayList<>();
-        for (Event event : eventList) {
-            eventShortDtoList.add(mapFromEventToEventShortDto(event));
-        }
-        return eventShortDtoList;
+        return eventList.stream().map(EventMapper::mapFromEventToEventShortDto).collect(Collectors.toList());
     }
 }

@@ -64,49 +64,104 @@ public class IndividualEventServiceImpl implements IndividualEventService {
     @Override
     public EventFullDto changeEventByUser(int userId, int eventId, UpdateEventUserRequest updateEventUserRequest) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event is not found or unavailable."));
-        if (event.getState().equals(EventStatus.PENDING) || event.getState().equals(EventStatus.CANCELED)) {
-            if (updateEventUserRequest.getEventDate() != null) {
-                validTime(updateEventUserRequest.getEventDate());
-                event.setEventDate(LocalDateTime.parse(updateEventUserRequest.getEventDate()));
-            }
-            if (updateEventUserRequest.getAnnotation() != null) {
-                event.setAnnotation(updateEventUserRequest.getAnnotation());
-            }
-            if (updateEventUserRequest.getCategory() != null) {
-                event.setCategory(mapFromCategoryDtoToCategory(updateEventUserRequest.getCategory()));
-            }
-            if (updateEventUserRequest.getDescription() != null) {
-                event.setDescription(updateEventUserRequest.getDescription());
-            }
-            if (updateEventUserRequest.getLocation() != null) {
-                event.setLocation(updateEventUserRequest.getLocation());
-            }
-            if (updateEventUserRequest.getPaid() != null) {
-                event.setPaid(updateEventUserRequest.getPaid());
-            }
-            if (updateEventUserRequest.getParticipantLimit() != null) {
-                event.setParticipantLimit(updateEventUserRequest.getParticipantLimit());
-            }
-            if (updateEventUserRequest.getRequestModeration() != null) {
-                event.setRequestModeration(updateEventUserRequest.getRequestModeration());
-            }
-            if (updateEventUserRequest.getStateAction() != null) {
-                switch (updateEventUserRequest.getStateAction()) {
-                    case SEND_TO_REVIEW:
-                        event.setState(EventStatus.PENDING);
-                        break;
-                    case CANCEL_REVIEW:
-                        event.setState(EventStatus.CANCELED);
-                        break;
-                }
-            }
-            if (updateEventUserRequest.getTitle() != null) {
-                event.setTitle(updateEventUserRequest.getTitle());
-            }
+        if (event.getState() == EventStatus.PENDING || event.getState() == EventStatus.CANCELED) {
+            event = changeEventFields(event, updateEventUserRequest);
             return mapFromEventToEventFullDto(eventRepository.save(event));
         } else {
             throw new ConflictException("Data integrity violation has occurred.");
         }
+    }
+
+    private Event changeEventDateField(Event event, UpdateEventUserRequest updateEventUserRequest) {
+        if (updateEventUserRequest.getEventDate() != null) {
+            validTime(updateEventUserRequest.getEventDate());
+            event.setEventDate(LocalDateTime.parse(updateEventUserRequest.getEventDate()));
+        }
+        return event;
+    }
+
+    private Event changeAnnotationField(Event event, UpdateEventUserRequest updateEventUserRequest) {
+        if (updateEventUserRequest.getAnnotation() != null) {
+            event.setAnnotation(updateEventUserRequest.getAnnotation());
+        }
+        return event;
+    }
+
+    private Event changeCategoryField(Event event, UpdateEventUserRequest updateEventUserRequest) {
+        if (updateEventUserRequest.getCategory() != null) {
+            event.setCategory(mapFromCategoryDtoToCategory(updateEventUserRequest.getCategory()));
+        }
+        return event;
+    }
+
+    private Event changeDescriptionField(Event event, UpdateEventUserRequest updateEventUserRequest) {
+        if (updateEventUserRequest.getDescription() != null) {
+            event.setDescription(updateEventUserRequest.getDescription());
+        }
+        return event;
+    }
+
+    private Event changeLocationField(Event event, UpdateEventUserRequest updateEventUserRequest) {
+        if (updateEventUserRequest.getLocation() != null) {
+            event.setLocation(updateEventUserRequest.getLocation());
+        }
+        return event;
+    }
+
+    private Event changePaidField(Event event, UpdateEventUserRequest updateEventUserRequest) {
+        if (updateEventUserRequest.getPaid() != null) {
+            event.setPaid(updateEventUserRequest.getPaid());
+        }
+        return event;
+    }
+
+    private Event changeParticipantLimitField(Event event, UpdateEventUserRequest updateEventUserRequest) {
+        if (updateEventUserRequest.getParticipantLimit() != null) {
+            event.setParticipantLimit(updateEventUserRequest.getParticipantLimit());
+        }
+        return event;
+    }
+
+    private Event changeRequestModerationField(Event event, UpdateEventUserRequest updateEventUserRequest) {
+        if (updateEventUserRequest.getRequestModeration() != null) {
+            event.setRequestModeration(updateEventUserRequest.getRequestModeration());
+        }
+        return event;
+    }
+
+    private Event changeStateField(Event event, UpdateEventUserRequest updateEventUserRequest) {
+        if (updateEventUserRequest.getStateAction() != null) {
+            switch (updateEventUserRequest.getStateAction()) {
+                case SEND_TO_REVIEW:
+                    event.setState(EventStatus.PENDING);
+                    break;
+                case CANCEL_REVIEW:
+                    event.setState(EventStatus.CANCELED);
+                    break;
+            }
+        }
+        return event;
+    }
+
+    private Event changeTitleField(Event event, UpdateEventUserRequest updateEventUserRequest) {
+        if (updateEventUserRequest.getTitle() != null) {
+            event.setTitle(updateEventUserRequest.getTitle());
+        }
+        return event;
+    }
+
+    private Event changeEventFields(Event event, UpdateEventUserRequest updateEventUserRequest) {
+        event = changeEventDateField(event, updateEventUserRequest);
+        event = changeAnnotationField(event, updateEventUserRequest);
+        event = changeCategoryField(event, updateEventUserRequest);
+        event = changeDescriptionField(event, updateEventUserRequest);
+        event = changeLocationField(event, updateEventUserRequest);
+        event = changePaidField(event, updateEventUserRequest);
+        event = changeParticipantLimitField(event, updateEventUserRequest);
+        event = changeRequestModerationField(event, updateEventUserRequest);
+        event = changeStateField(event, updateEventUserRequest);
+        event = changeTitleField(event, updateEventUserRequest);
+        return event;
     }
 
     @Override

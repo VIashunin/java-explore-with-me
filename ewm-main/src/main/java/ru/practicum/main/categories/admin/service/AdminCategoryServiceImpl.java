@@ -31,7 +31,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
     @Override
     public CategoryDto changeCategory(int catId, CategoryDto categoryDto) {
-        Category outdatedCategory = categoryRepository.findById(catId).orElseThrow(/*() -> new NotFoundException("Category with id:" + catId + " is not found.")*/);
+        Category outdatedCategory = categoryRepository.findById(catId).orElseThrow(() -> new NotFoundException("Category with id:" + catId + " is not found."));
         if (categoryDto.getName() != null) {
             outdatedCategory.setName(categoryDto.getName());
         }

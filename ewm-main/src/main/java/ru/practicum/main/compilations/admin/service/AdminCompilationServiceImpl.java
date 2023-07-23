@@ -14,6 +14,7 @@ import ru.practicum.main.exception.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ru.practicum.main.compilations.mapper.CompilationMapper.mapFromCompilationToCompilationDto;
 import static ru.practicum.main.compilations.mapper.CompilationMapper.mapFromNewCompilationDtoToCompilation;
@@ -29,9 +30,7 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
     public CompilationDto createCompilation(NewCompilationDto newCompilationDto) {
         List<Event> eventList = new ArrayList<>();
         if (newCompilationDto.getEvents() != null && !newCompilationDto.getEvents().isEmpty()) {
-            for (Integer eventId : newCompilationDto.getEvents()) {
-                eventList.add(individualEventService.getEventById(eventId));
-            }
+            eventList = newCompilationDto.getEvents().stream().map(individualEventService::getEventById).collect(Collectors.toList());
         }
         return mapFromCompilationToCompilationDto(compilationRepository.save(mapFromNewCompilationDtoToCompilation(newCompilationDto, eventList)));
     }
