@@ -3,8 +3,6 @@ package ru.practicum.main.users.dto;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Data
