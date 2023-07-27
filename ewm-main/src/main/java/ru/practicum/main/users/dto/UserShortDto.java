@@ -9,8 +9,6 @@ import javax.validation.constraints.NotNull;
 @Data
 @Builder
 public class UserShortDto {
-    @NotNull
     private int id;
-    @NotBlank
     private String name;
 }

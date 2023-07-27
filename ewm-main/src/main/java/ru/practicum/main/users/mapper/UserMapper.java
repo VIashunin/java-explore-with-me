@@ -14,14 +14,32 @@ public class UserMapper {
         return User.builder()
                 .name(userRequest.getName())
                 .email(userRequest.getEmail())
+                .subscriptionPermission(userRequest.getSubscriptionPermission())
+                .subscriptions(List.of())
+                .subscribers(List.of())
                 .build();
     }
 
     public static UserDto mapFromUserToUserDto(User user) {
+        List<Integer> subscriptionsIds = new ArrayList<>();
+        List<Integer> subscribersIds = new ArrayList<>();
+        if (user.getSubscriptions() != null && !user.getSubscriptions().isEmpty()) {
+            for (User userFromSubscriptions : user.getSubscriptions()) {
+                subscriptionsIds.add(userFromSubscriptions.getId());
+            }
+        }
+        if (user.getSubscribers() != null && !user.getSubscribers().isEmpty()) {
+            for (User userFromSubscribers : user.getSubscribers()) {
+                subscribersIds.add(userFromSubscribers.getId());
+            }
+        }
         return UserDto.builder()
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
+                .subscriptionPermission(user.isSubscriptionPermission())
+                .subscriptions(subscriptionsIds)
+                .subscribers(subscribersIds)
                 .build();
     }
 
