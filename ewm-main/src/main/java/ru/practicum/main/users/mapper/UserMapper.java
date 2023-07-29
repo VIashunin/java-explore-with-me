@@ -24,14 +24,10 @@ public class UserMapper {
         List<Integer> subscriptionsIds = new ArrayList<>();
         List<Integer> subscribersIds = new ArrayList<>();
         if (user.getSubscriptions() != null && !user.getSubscriptions().isEmpty()) {
-            for (User userFromSubscriptions : user.getSubscriptions()) {
-                subscriptionsIds.add(userFromSubscriptions.getId());
-            }
+            addIds(user.getSubscriptions(), subscriptionsIds);
         }
         if (user.getSubscribers() != null && !user.getSubscribers().isEmpty()) {
-            for (User userFromSubscribers : user.getSubscribers()) {
-                subscribersIds.add(userFromSubscribers.getId());
-            }
+            addIds(user.getSubscribers(), subscribersIds);
         }
         return UserDto.builder()
                 .id(user.getId())
@@ -41,6 +37,13 @@ public class UserMapper {
                 .subscriptions(subscriptionsIds)
                 .subscribers(subscribersIds)
                 .build();
+    }
+
+    private static List<Integer> addIds(List<User> users, List<Integer> ids) {
+        for (User user : users) {
+            ids.add(user.getId());
+        }
+        return ids;
     }
 
     public static List<UserDto> mapFromUserListToUserDtoList(Page<User> userList) {

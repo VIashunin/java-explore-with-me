@@ -30,17 +30,16 @@ public class IndividualUserServiceImpl implements IndividualUserService {
         }
         User user = findUser(userId);
         User subscription = findUser(subsId);
-        if (subscription.isSubscriptionPermission()) {
-            if (!user.getSubscriptions().contains(subscription)) {
-                subscription.getSubscribers().add(user);
-                user.getSubscriptions().add(subscription);
-                userRepository.save(subscription);
-                return mapFromUserToUserDto(userRepository.save(user));
-            } else {
-                throw new ConflictException("Such subscription  is already exists.");
-            }
-        } else {
+        if (!subscription.isSubscriptionPermission()) {
             throw new ConflictException("The user has denied following himself.");
+        }
+        if (!user.getSubscriptions().contains(subscription)) {
+            subscription.getSubscribers().add(user);
+            user.getSubscriptions().add(subscription);
+            userRepository.save(subscription);
+            return mapFromUserToUserDto(userRepository.save(user));
+        } else {
+            throw new ConflictException("Such subscription  is already exists.");
         }
     }
 
@@ -53,21 +52,21 @@ public class IndividualUserServiceImpl implements IndividualUserService {
         User subscription = findUser(subsId);
         boolean firstCondition = user.getSubscriptions() != null && !user.getSubscriptions().isEmpty();
         boolean secondCondition = subscription.getSubscribers() != null && !subscription.getSubscribers().isEmpty();
-        if (firstCondition && secondCondition) {
-            if (user.getSubscriptions().contains(subscription)) {
-                user.getSubscriptions().remove(subscription);
-                subscription.getSubscribers().remove(user);
-                userRepository.save(subscription);
-                return mapFromUserToUserDto(userRepository.save(user));
-            } else {
-                throw new ConflictException("Such subscription does not exist, so it cannot be canceled.");
-            }
-        } else {
+        if (!(firstCondition && secondCondition)) {
             throw new ConflictException("Data integrity violation has occurred.");
+        }
+        if (user.getSubscriptions().contains(subscription)) {
+            user.getSubscriptions().remove(subscription);
+            subscription.getSubscribers().remove(user);
+            userRepository.save(subscription);
+            return mapFromUserToUserDto(userRepository.save(user));
+        } else {
+            throw new ConflictException("Such subscription does not exist, so it cannot be canceled.");
         }
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<EventShortDto> getSubscriptionEvents(int userId, int from, int size) {
         User user = findUser(userId);
         List<EventShortDto> subscriptionsEventsList = new ArrayList<>();
@@ -82,6 +81,7 @@ public class IndividualUserServiceImpl implements IndividualUserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<EventShortDto> getSubscriptionByIdEvents(int userId, int subsId, int from, int size) {
         User user = findUser(userId);
         User subscription = findUser(subsId);
@@ -97,6 +97,7 @@ public class IndividualUserServiceImpl implements IndividualUserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<EventShortDto> getSubscriberEvents(int userId, int from, int size) {
         User user = findUser(userId);
         List<EventShortDto> subscribersEventsList = new ArrayList<>();
@@ -111,6 +112,7 @@ public class IndividualUserServiceImpl implements IndividualUserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<EventShortDto> getSubscriberByIdEvents(int userId, int subsId, int from, int size) {
         User user = findUser(userId);
         User subscriber = findUser(subsId);
