@@ -14,15 +14,36 @@ public class UserMapper {
         return User.builder()
                 .name(userRequest.getName())
                 .email(userRequest.getEmail())
+                .subscriptionPermission(userRequest.getSubscriptionPermission())
+                .subscriptions(List.of())
+                .subscribers(List.of())
                 .build();
     }
 
     public static UserDto mapFromUserToUserDto(User user) {
+        List<Integer> subscriptionsIds = new ArrayList<>();
+        List<Integer> subscribersIds = new ArrayList<>();
+        if (user.getSubscriptions() != null && !user.getSubscriptions().isEmpty()) {
+            addIds(user.getSubscriptions(), subscriptionsIds);
+        }
+        if (user.getSubscribers() != null && !user.getSubscribers().isEmpty()) {
+            addIds(user.getSubscribers(), subscribersIds);
+        }
         return UserDto.builder()
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
+                .subscriptionPermission(user.isSubscriptionPermission())
+                .subscriptions(subscriptionsIds)
+                .subscribers(subscribersIds)
                 .build();
+    }
+
+    private static List<Integer> addIds(List<User> users, List<Integer> ids) {
+        for (User user : users) {
+            ids.add(user.getId());
+        }
+        return ids;
     }
 
     public static List<UserDto> mapFromUserListToUserDtoList(Page<User> userList) {
